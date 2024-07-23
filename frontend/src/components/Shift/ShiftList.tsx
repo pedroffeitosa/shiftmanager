@@ -9,13 +9,17 @@ const ShiftList: React.FC = () => {
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
 
   useEffect(() => {
+    fetchShifts();
+  }, []);
+
+  const fetchShifts = () => {
     axios.get('http://localhost:3000/shifts')
       .then(response => setShifts(response.data))
       .catch(error => {
         console.error('Erro ao buscar turnos:', error);
         toast.error('Erro ao buscar turnos');
       });
-  }, []);
+  };
 
   const handleDelete = (id: number) => {
     axios.delete(`http://localhost:3000/shifts/${id}`)
@@ -29,10 +33,15 @@ const ShiftList: React.FC = () => {
       });
   };
 
+  const handleSave = () => {
+    fetchShifts();
+    setSelectedShift(null);
+  };
+
   return (
     <div className="bg-white p-4 rounded-md shadow-md">
       <h2 className="text-2xl font-bold mb-4">Lista de Turnos</h2>
-      <ShiftForm selectedShift={selectedShift} setSelectedShift={setSelectedShift} />
+      <ShiftForm selectedShift={selectedShift} setSelectedShift={setSelectedShift} onSave={handleSave} />
       <ul className="mt-4">
         {shifts.map(shift => (
           <li key={shift.id} className="mb-2 flex justify-between items-center border-b pb-2">

@@ -6,9 +6,10 @@ import { toast } from 'react-toastify';
 interface ShiftFormProps {
   selectedShift: Shift | null;
   setSelectedShift: (shift: Shift | null) => void;
+  onSave: () => void; // Adicionar a prop onSave
 }
 
-const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift }) => {
+const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift, onSave }) => {
   const [doctorId, setDoctorId] = useState<number | null>(null);
   const [hospitalId, setHospitalId] = useState<number | null>(null);
   const [startTime, setStartTime] = useState('');
@@ -40,6 +41,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift }
         await axios.post('http://localhost:3000/shifts', shiftData);
         toast.success('Turno adicionado com sucesso');
       }
+      onSave(); // Chamar a função onSave após salvar
       setSelectedShift(null);
       setDoctorId(null);
       setHospitalId(null);
