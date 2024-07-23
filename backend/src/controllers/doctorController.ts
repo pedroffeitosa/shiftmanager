@@ -1,64 +1,49 @@
 import { Request, Response } from 'express';
-import connection from '../database';
-import { Doctor } from '../types'; // Importar o tipo Doctor
+import createConnection from '../database';
+import { Doctor } from '../models/doctor';
 
-export const getDoctors = (req: Request, res: Response) => {
-  connection.query('SELECT * FROM doctors', (err, results) => {
-    if (err) {
-      console.error('Error fetching doctors:', err);
-      res.status(500).json({ error: err.message });
-      return;
-    }
+export const getDoctors = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const [results] = await connection.query('SELECT * FROM doctors');
     res.json(results);
-  });
+  } catch (err: any) {
+    console.error('Erro ao buscar médicos:', err);
+    res.status(500).json({ error: 'Erro ao buscar médicos' });
+  }
 };
 
-export const addDoctor = (req: Request, res: Response) => {
-  const newDoctor: Doctor = req.body;
-  connection.query('INSERT INTO doctors SET ?', newDoctor, (err, results: any) => {
-    if (err) {
-      console.error('Error adding doctor:', err);
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ id: results.insertId, ...newDoctor });
-  });
+export const addDoctor = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const newDoctor: Doctor = req.body;
+    const [results] = await connection.query('INSERT INTO doctors SET ?', newDoctor);
+    res.json({ id: (results as any).insertId, ...newDoctor });
+  } catch (err: any) {
+    console.error('Erro ao adicionar médico:', err);
+    res.status(500).json({ error: 'Erro ao adicionar médico' });
+  }
 };
 
-export const updateDoctor = (req: Request, res: Response) => {
-  const updatedDoctor: Doctor = req.body;
-  connection.query('UPDATE doctors SET ? WHERE id = ?', [updatedDoctor, req.params.id], (err, results) => {
-    if (err) {
-      console.error('Error updating doctor:', err);
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ message: 'Doctor updated successfully' });
-  });
+export const updateDoctor = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const updatedDoctor: Doctor = req.body;
+    await connection.query('UPDATE doctors SET ? WHERE id = ?', [updatedDoctor, req.params.id]);
+    res.json({ message: 'Médico atualizado com sucesso' });
+  } catch (err: any) {
+    console.error('Erro ao atualizar médico:', err);
+    res.status(500).json({ error: 'Erro ao atualizar médico' });
+  }
 };
 
-export const deleteDoctor = (req: Request, res: Response) => {
-  const doctorId = req.params.id;
-
-  connection.query('DELETE FROM shifts WHERE doctor_id = ?', [doctorId], (err, results) => {
-    if (err) {
-      console.error('Error deleting shifts:', err);
-      res.status(500).json({ error: 'Não foi possível deletar o médico porque ele está associado a um turno.' });
-      return;
-    }
-
-    connection.query('DELETE FROM doctors WHERE id = ?', [doctorId], (err, results) => {
-      if (err) {
-        if (err.code === 'ER_ROW_IS_REFERENCED_2') {
-          console.error('Error deleting doctor:', err);
-          res.status(500).json({ error: 'Não foi possível deletar o médico porque ele está associado a um turno.' });
-        } else {
-          console.error('Error deleting doctor:', err);
-          res.status(500).json({ error: err.message });
-        }
-        return;
-      }
-      res.json({ message: 'Doctor and associated shifts deleted successfully' });
-    });
-  });
+export const deleteDoctor = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    await connection.query('DELETE FROM doctors WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Médico deletado com sucesso' });
+  } catch (err: any) {
+    console.error('Erro ao deletar médico:', err);
+    res.status(500).json({ error: 'Erro ao deletar médico' });
+  }
 };

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import DoctorForm from './DoctorForm';
-import { Doctor } from '../../types'; // Importar o tipo Doctor
+import { Doctor } from '../../types';
 import { toast } from 'react-toastify';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const DoctorList: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchDoctors();

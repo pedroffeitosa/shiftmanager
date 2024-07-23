@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Shift } from '../../types'; // Importar o tipo Shift
+import { Shift } from '../../types';
 import { toast } from 'react-toastify';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 interface ShiftFormProps {
   selectedShift: Shift | null;
   setSelectedShift: (shift: Shift | null) => void;
-  onSave: () => void; // Adicionar a prop onSave
+  onSave: () => void;
 }
 
 const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift, onSave }) => {
@@ -14,7 +16,6 @@ const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift, 
   const [hospitalId, setHospitalId] = useState<number | null>(null);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (selectedShift) {
@@ -42,7 +43,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift, 
         await axios.post(`${apiUrl}/shifts`, shiftData);
         toast.success('Turno adicionado com sucesso');
       }
-      onSave(); // Chamar a função onSave após salvar
+      onSave();
       setSelectedShift(null);
       setDoctorId(null);
       setHospitalId(null);

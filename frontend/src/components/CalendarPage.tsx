@@ -3,6 +3,8 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import axios from 'axios';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 interface Shift {
   id: number;
   doctor_id: number;
@@ -14,13 +16,12 @@ interface Shift {
 const CalendarPage: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [date, setDate] = useState<Date | null>(new Date());
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     axios.get(`${apiUrl}/shifts`)
       .then(response => setShifts(response.data))
       .catch(error => console.error('Erro ao buscar turnos:', error));
-  }, [apiUrl]);
+  }, []);
 
   const getShiftsForDate = (date: Date) => {
     return shifts.filter(shift => {

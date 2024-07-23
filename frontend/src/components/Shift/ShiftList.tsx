@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ShiftForm from './ShiftForm';
-import { Shift } from '../../types'; // Importar o tipo Shift
+import { Shift } from '../../types';
 import { toast } from 'react-toastify';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const ShiftList: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchShifts();

@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Doctor } from '../../types'; 
+import { Doctor } from '../../types';
 import { toast } from 'react-toastify';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 interface DoctorFormProps {
   selectedDoctor: Doctor | null;
   setSelectedDoctor: (doctor: Doctor | null) => void;
-  onSave: () => void; 
+  onSave: () => void;
 }
 
 const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoctor, onSave }) => {
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('');
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (selectedDoctor) {
@@ -36,7 +37,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoct
         await axios.post(`${apiUrl}/doctors`, doctorData);
         toast.success('Médico adicionado com sucesso');
       }
-      onSave(); 
+      onSave();
       setName('');
       setSpecialty('');
     } catch (error) {

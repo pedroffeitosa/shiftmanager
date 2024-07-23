@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import HospitalForm from './HospitalForm';
-import { Hospital } from '../../types'; // Importar o tipo Hospital
+import { Hospital } from '../../types';
 import { toast } from 'react-toastify';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 const HospitalList: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchHospitals();

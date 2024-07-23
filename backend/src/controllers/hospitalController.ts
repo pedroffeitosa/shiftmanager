@@ -1,64 +1,49 @@
 import { Request, Response } from 'express';
-import connection from '../database';
-import { Hospital } from '../types'; // Importar o tipo Hospital
+import createConnection from '../database';
+import { Hospital } from '../models/hospital';
 
-export const getHospitals = (req: Request, res: Response) => {
-  connection.query('SELECT * FROM hospitals', (err, results) => {
-    if (err) {
-      console.error('Error fetching hospitals:', err);
-      res.status(500).json({ error: err.message });
-      return;
-    }
+export const getHospitals = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const [results] = await connection.query('SELECT * FROM hospitals');
     res.json(results);
-  });
+  } catch (err: any) {
+    console.error('Erro ao buscar hospitais:', err);
+    res.status(500).json({ error: 'Erro ao buscar hospitais' });
+  }
 };
 
-export const addHospital = (req: Request, res: Response) => {
-  const newHospital: Hospital = req.body;
-  connection.query('INSERT INTO hospitals SET ?', newHospital, (err, results: any) => {
-    if (err) {
-      console.error('Error adding hospital:', err);
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ id: results.insertId, ...newHospital });
-  });
+export const addHospital = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const newHospital: Hospital = req.body;
+    const [results] = await connection.query('INSERT INTO hospitals SET ?', newHospital);
+    res.json({ id: (results as any).insertId, ...newHospital });
+  } catch (err: any) {
+    console.error('Erro ao adicionar hospital:', err);
+    res.status(500).json({ error: 'Erro ao adicionar hospital' });
+  }
 };
 
-export const updateHospital = (req: Request, res: Response) => {
-  const updatedHospital: Hospital = req.body;
-  connection.query('UPDATE hospitals SET ? WHERE id = ?', [updatedHospital, req.params.id], (err, results) => {
-    if (err) {
-      console.error('Error updating hospital:', err);
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ message: 'Hospital updated successfully' });
-  });
+export const updateHospital = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const updatedHospital: Hospital = req.body;
+    await connection.query('UPDATE hospitals SET ? WHERE id = ?', [updatedHospital, req.params.id]);
+    res.json({ message: 'Hospital atualizado com sucesso' });
+  } catch (err: any) {
+    console.error('Erro ao atualizar hospital:', err);
+    res.status(500).json({ error: 'Erro ao atualizar hospital' });
+  }
 };
 
-export const deleteHospital = (req: Request, res: Response) => {
-  const hospitalId = req.params.id;
-
-  connection.query('DELETE FROM shifts WHERE hospital_id = ?', [hospitalId], (err, results) => {
-    if (err) {
-      console.error('Error deleting shifts:', err);
-      res.status(500).json({ error: 'Não foi possível deletar o hospital porque ele está associado a um turno.' });
-      return;
-    }
-
-    connection.query('DELETE FROM hospitals WHERE id = ?', [hospitalId], (err, results) => {
-      if (err) {
-        if (err.code === 'ER_ROW_IS_REFERENCED_2') {
-          console.error('Error deleting hospital:', err);
-          res.status(500).json({ error: 'Não foi possível deletar o hospital porque ele está associado a um turno.' });
-        } else {
-          console.error('Error deleting hospital:', err);
-          res.status(500).json({ error: err.message });
-        }
-        return;
-      }
-      res.json({ message: 'Hospital and associated shifts deleted successfully' });
-    });
-  });
+export const deleteHospital = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    await connection.query('DELETE FROM hospitals WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Hospital deletado com sucesso' });
+  } catch (err: any) {
+    console.error('Erro ao deletar hospital:', err);
+    res.status(500).json({ error: 'Erro ao deletar hospital' });
+  }
 };

@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Hospital } from '../../types'; // Importar o tipo Hospital
+import { Hospital } from '../../types';
 import { toast } from 'react-toastify';
+
+const apiUrl = process.env.REACT_APP_API_URL;
 
 interface HospitalFormProps {
   selectedHospital: Hospital | null;
   setSelectedHospital: (hospital: Hospital | null) => void;
-  onSave: () => void; // Adicionar a prop onSave
+  onSave: () => void;
 }
 
 const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelectedHospital, onSave }) => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (selectedHospital) {
@@ -36,7 +37,7 @@ const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelect
         await axios.post(`${apiUrl}/hospitals`, hospitalData);
         toast.success('Hospital adicionado com sucesso');
       }
-      onSave(); // Chamar a função onSave após salvar
+      onSave();
       setName('');
       setLocation('');
     } catch (error) {

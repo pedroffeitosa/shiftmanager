@@ -1,45 +1,49 @@
 import { Request, Response } from 'express';
-import connection from '../database';
-import { Shift } from '../types'; // Importar o tipo Shift
+import createConnection from '../database';
+import { Shift } from '../models/shift';
 
-export const getShifts = (req: Request, res: Response) => {
-  connection.query('SELECT * FROM shifts', (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
+export const getShifts = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const [results] = await connection.query('SELECT * FROM shifts');
     res.json(results);
-  });
+  } catch (err: any) {
+    console.error('Erro ao buscar turnos:', err);
+    res.status(500).json({ error: 'Erro ao buscar turnos' });
+  }
 };
 
-export const addShift = (req: Request, res: Response) => {
-  const newShift: Shift = req.body;
-  connection.query('INSERT INTO shifts SET ?', newShift, (err, results: any) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ id: results.insertId, ...newShift });
-  });
+export const addShift = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const newShift: Shift = req.body;
+    const [results] = await connection.query('INSERT INTO shifts SET ?', newShift);
+    res.json({ id: (results as any).insertId, ...newShift });
+  } catch (err: any) {
+    console.error('Erro ao adicionar turno:', err);
+    res.status(500).json({ error: 'Erro ao adicionar turno' });
+  }
 };
 
-export const updateShift = (req: Request, res: Response) => {
-  const updatedShift: Shift = req.body;
-  connection.query('UPDATE shifts SET ? WHERE id = ?', [updatedShift, req.params.id], (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ message: 'Shift updated successfully' });
-  });
+export const updateShift = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    const updatedShift: Shift = req.body;
+    await connection.query('UPDATE shifts SET ? WHERE id = ?', [updatedShift, req.params.id]);
+    res.json({ message: 'Turno atualizado com sucesso' });
+  } catch (err: any) {
+    console.error('Erro ao atualizar turno:', err);
+    res.status(500).json({ error: 'Erro ao atualizar turno' });
+  }
 };
 
-export const deleteShift = (req: Request, res: Response) => {
-  connection.query('DELETE FROM shifts WHERE id = ?', [req.params.id], (err, results) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({ message: 'Shift deleted successfully' });
-  });
+export const deleteShift = async (req: Request, res: Response) => {
+  try {
+    const connection = await createConnection();
+    await connection.query('DELETE FROM shifts WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Turno deletado com sucesso' });
+  } catch (err: any) {
+    console.error('Erro ao deletar turno:', err);
+    res.status(500).json({ error: 'Erro ao deletar turno' });
+  }
 };
