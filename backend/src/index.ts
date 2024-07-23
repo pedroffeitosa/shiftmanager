@@ -3,18 +3,24 @@ import cors from 'cors';
 import doctorRoutes from './routes/doctorRoutes';
 import hospitalRoutes from './routes/hospitalRoutes';
 import shiftRoutes from './routes/shiftRoutes';
-import testRoutes from './routes/testRoutes'; 
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = ['https://shiftmanager-jade.vercel.app'];
+const options: cors.CorsOptions = {
+  origin: allowedOrigins
+};
+app.use(cors(options));
 
+app.use(express.json());
 app.use('/doctors', doctorRoutes);
 app.use('/hospitals', hospitalRoutes);
 app.use('/shifts', shiftRoutes);
-app.use('/test', testRoutes); 
+
+app.get('/test', (req, res) => {
+  res.send('API is working!');
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
