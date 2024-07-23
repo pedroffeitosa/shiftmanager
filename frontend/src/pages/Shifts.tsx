@@ -7,24 +7,26 @@ interface Shift {
   hospital_id: number;
   start_time: string;
   end_time: string;
-  created_at: string;
 }
 
 const Shifts: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get('http://localhost:3000/shifts')
+    axios.get(`${apiUrl}/shifts`)
       .then(response => setShifts(response.data))
       .catch(error => console.error('Erro ao buscar turnos:', error));
-  }, []);
+  }, [apiUrl]);
 
   return (
     <div className="container mx-auto mt-4">
       <h2 className="text-xl mb-4">Lista de Turnos</h2>
       <ul>
         {shifts.map(shift => (
-          <li key={shift.id}>Doctor ID: {shift.doctor_id} - Hospital ID: {shift.hospital_id} - {new Date(shift.start_time).toLocaleString()} to {new Date(shift.end_time).toLocaleString()}</li>
+          <li key={shift.id}>
+            Médico ID: {shift.doctor_id} no Hospital ID: {shift.hospital_id} das {new Date(shift.start_time).toLocaleTimeString()} às {new Date(shift.end_time).toLocaleTimeString()}
+          </li>
         ))}
       </ul>
     </div>

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-// Rest of the code remains the same
-
 interface Doctor {
   id: number;
   name: string;
@@ -12,12 +10,13 @@ interface Doctor {
 
 const Doctors: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get('http://localhost:3000/doctors')
+    axios.get(`${apiUrl}/doctors`)
       .then(response => setDoctors(response.data))
       .catch(error => console.error('Erro ao buscar médicos:', error));
-  }, []);
+  }, [apiUrl]);
 
   return (
     <div className="container mx-auto mt-4">

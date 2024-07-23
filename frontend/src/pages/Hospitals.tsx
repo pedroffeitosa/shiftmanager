@@ -10,12 +10,13 @@ interface Hospital {
 
 const Hospitals: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get('http://localhost:3000/hospitals')
+    axios.get(`${apiUrl}/hospitals`)
       .then(response => setHospitals(response.data))
       .catch(error => console.error('Erro ao buscar hospitais:', error));
-  }, []);
+  }, [apiUrl]);
 
   return (
     <div className="container mx-auto mt-4">
