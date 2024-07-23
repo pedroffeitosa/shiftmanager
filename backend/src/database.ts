@@ -1,18 +1,23 @@
-import mysql from 'mysql2';
+import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
 
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'casa4088',
-  database: 'shiftmanager'
-});
+dotenv.config();
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Error connecting: ' + err.stack);
-    return;
+const createConnection = async () => {
+  try {
+    const connection = await mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+    });
+
+    console.log('Connected to the database!');
+    return connection;
+  } catch (err) {
+    console.error('Error connecting to the database:', err);
+    throw err;
   }
-  console.log('Connected as id ' + connection.threadId);
-});
+};
 
-export default connection;
+export default createConnection;
