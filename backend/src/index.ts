@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: ['https://shiftmanager-jade.vercel.app'], // Adicione aqui os domínios permitidos
+  origin: ['https://shiftmanager-jade.vercel.app'], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type'],
 };
