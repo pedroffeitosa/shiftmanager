@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Doctor } from '../../types'; // Importar o tipo Doctor
+import { toast } from 'react-toastify';
 
 interface DoctorFormProps {
   selectedDoctor: Doctor | null;
@@ -8,50 +9,76 @@ interface DoctorFormProps {
 }
 
 const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoctor }) => {
-  const [doctor, setDoctor] = useState<Doctor>({ name: '', specialty: '' });
+  const [name, setName] = useState('');
+  const [specialty, setSpecialty] = useState('');
 
   useEffect(() => {
     if (selectedDoctor) {
-      setDoctor(selectedDoctor);
+      setName(selectedDoctor.name);
+      setSpecialty(selectedDoctor.specialty);
     } else {
-      setDoctor({ name: '', specialty: '' });
+      setName('');
+      setSpecialty('');
     }
   }, [selectedDoctor]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (doctor.id !== undefined) {
-      axios.put(`http://localhost:3000/doctors/${doctor.id}`, doctor)
-        .then(response => setSelectedDoctor(null))
-        .catch(error => console.error('Erro ao atualizar médico:', error));
-    } else {
-      axios.post('http://localhost:3000/doctors', doctor)
-        .then(response => setSelectedDoctor(null))
-        .catch(error => console.error('Erro ao criar médico:', error));
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const doctorData = { name, specialty };
+
+    try {
+      if (selectedDoctor) {
+        await axios.put(`http://localhost:3000/doctors/${selectedDoctor.id}`, doctorData);
+        toast.success('Médico atualizado com sucesso');
+      } else {
+        await axios.post('http://localhost:3000/doctors', doctorData);
+        toast.success('Médico adicionado com sucesso');
+      }
+      setSelectedDoctor(null);
+      setName('');
+      setSpecialty('');
+    } catch (error) {
+      console.error('Erro ao salvar médico:', error);
+      toast.error('Erro ao salvar médico');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 bg-gray-100 p-4 rounded-md shadow-md">
-      <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">Name</label>
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded-md shadow-md mb-4">
+      <div className="mb-4">
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          Nome
+        </label>
         <input
           type="text"
-          value={doctor.name}
-          onChange={(e) => setDoctor({ ...doctor, name: e.target.value })}
-          className="border p-2 w-full rounded-md"
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
         />
       </div>
-      <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">Specialty</label>
+      <div className="mb-4">
+        <label htmlFor="specialty" className="block text-sm font-medium text-gray-700">
+          Especialidade
+        </label>
         <input
           type="text"
-          value={doctor.specialty}
-          onChange={(e) => setDoctor({ ...doctor, specialty: e.target.value })}
-          className="border p-2 w-full rounded-md"
+          id="specialty"
+          value={specialty}
+          onChange={(e) => setSpecialty(e.target.value)}
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
         />
       </div>
-      <button type="submit" className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
+        >
+          {selectedDoctor ? 'Atualizar' : 'Adicionar'}
+        </button>
+      </div>
     </form>
   );
 };

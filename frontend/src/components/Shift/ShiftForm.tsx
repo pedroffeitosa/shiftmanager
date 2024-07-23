@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Shift } from '../../types'; // Importar o tipo Shift
+import { toast } from 'react-toastify';
 
 interface ShiftFormProps {
   selectedShift: Shift | null;
@@ -8,68 +9,110 @@ interface ShiftFormProps {
 }
 
 const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift }) => {
-  const [shift, setShift] = useState<Shift>({ doctor_id: 0, hospital_id: 0, start_time: '', end_time: '' });
+  const [doctorId, setDoctorId] = useState<number | null>(null);
+  const [hospitalId, setHospitalId] = useState<number | null>(null);
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
 
   useEffect(() => {
     if (selectedShift) {
-      setShift(selectedShift);
+      setDoctorId(selectedShift.doctor_id);
+      setHospitalId(selectedShift.hospital_id);
+      setStartTime(selectedShift.start_time);
+      setEndTime(selectedShift.end_time);
     } else {
-      setShift({ doctor_id: 0, hospital_id: 0, start_time: '', end_time: '' });
+      setDoctorId(null);
+      setHospitalId(null);
+      setStartTime('');
+      setEndTime('');
     }
   }, [selectedShift]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (shift.id !== undefined) {
-      axios.put(`http://localhost:3000/shifts/${shift.id}`, shift)
-        .then(response => setSelectedShift(null))
-        .catch(error => console.error('Erro ao atualizar turno:', error));
-    } else {
-      axios.post('http://localhost:3000/shifts', shift)
-        .then(response => setSelectedShift(null))
-        .catch(error => console.error('Erro ao criar turno:', error));
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    const shiftData = { doctor_id: doctorId, hospital_id: hospitalId, start_time: startTime, end_time: endTime };
+
+    try {
+      if (selectedShift) {
+        await axios.put(`http://localhost:3000/shifts/${selectedShift.id}`, shiftData);
+        toast.success('Turno atualizado com sucesso');
+      } else {
+        await axios.post('http://localhost:3000/shifts', shiftData);
+        toast.success('Turno adicionado com sucesso');
+      }
+      setSelectedShift(null);
+      setDoctorId(null);
+      setHospitalId(null);
+      setStartTime('');
+      setEndTime('');
+    } catch (error) {
+      console.error('Erro ao salvar turno:', error);
+      toast.error('Erro ao salvar turno');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 bg-gray-100 p-4 rounded-md shadow-md">
-      <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">Doctor ID</label>
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded-md shadow-md mb-4">
+      <div className="mb-4">
+        <label htmlFor="doctorId" className="block text-sm font-medium text-gray-700">
+          ID do Médico
+        </label>
         <input
           type="number"
-          value={shift.doctor_id}
-          onChange={(e) => setShift({ ...shift, doctor_id: parseInt(e.target.value) })}
-          className="border p-2 w-full rounded-md"
+          id="doctorId"
+          value={doctorId || ''}
+          onChange={(e) => setDoctorId(Number(e.target.value))}
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
         />
       </div>
-      <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">Hospital ID</label>
+      <div className="mb-4">
+        <label htmlFor="hospitalId" className="block text-sm font-medium text-gray-700">
+          ID do Hospital
+        </label>
         <input
           type="number"
-          value={shift.hospital_id}
-          onChange={(e) => setShift({ ...shift, hospital_id: parseInt(e.target.value) })}
-          className="border p-2 w-full rounded-md"
+          id="hospitalId"
+          value={hospitalId || ''}
+          onChange={(e) => setHospitalId(Number(e.target.value))}
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
         />
       </div>
-      <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">Start Time</label>
+      <div className="mb-4">
+        <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+          Hora de Início
+        </label>
         <input
           type="datetime-local"
-          value={shift.start_time}
-          onChange={(e) => setShift({ ...shift, start_time: e.target.value })}
-          className="border p-2 w-full rounded-md"
+          id="startTime"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
         />
       </div>
-      <div className="mb-2">
-        <label className="block text-sm font-medium text-gray-700">End Time</label>
+      <div className="mb-4">
+        <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+          Hora de Término
+        </label>
         <input
           type="datetime-local"
-          value={shift.end_time}
-          onChange={(e) => setShift({ ...shift, end_time: e.target.value })}
-          className="border p-2 w-full rounded-md"
+          id="endTime"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          required
         />
       </div>
-      <button type="submit" className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md">Save</button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
+        >
+          {selectedShift ? 'Atualizar' : 'Adicionar'}
+        </button>
+      </div>
     </form>
   );
 };
