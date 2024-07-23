@@ -9,13 +9,17 @@ const HospitalList: React.FC = () => {
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
 
   useEffect(() => {
+    fetchHospitals();
+  }, []);
+
+  const fetchHospitals = () => {
     axios.get('http://localhost:3000/hospitals')
       .then(response => setHospitals(response.data))
       .catch(error => {
         console.error('Erro ao buscar hospitais:', error);
         toast.error('Erro ao buscar hospitais');
       });
-  }, []);
+  };
 
   const handleDelete = (id: number) => {
     axios.delete(`http://localhost:3000/hospitals/${id}`)
@@ -29,10 +33,15 @@ const HospitalList: React.FC = () => {
       });
   };
 
+  const handleSave = () => {
+    fetchHospitals();
+    setSelectedHospital(null);
+  };
+
   return (
     <div className="bg-white p-4 rounded-md shadow-md">
       <h2 className="text-2xl font-bold mb-4">Lista de Hospitais</h2>
-      <HospitalForm selectedHospital={selectedHospital} setSelectedHospital={setSelectedHospital} />
+      <HospitalForm selectedHospital={selectedHospital} setSelectedHospital={setSelectedHospital} onSave={handleSave} />
       <ul className="mt-4">
         {hospitals.map(hospital => (
           <li key={hospital.id} className="mb-2 flex justify-between items-center border-b pb-2">

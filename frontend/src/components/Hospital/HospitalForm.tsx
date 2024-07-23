@@ -6,9 +6,10 @@ import { toast } from 'react-toastify';
 interface HospitalFormProps {
   selectedHospital: Hospital | null;
   setSelectedHospital: (hospital: Hospital | null) => void;
+  onSave: () => void; // Adicionar a prop onSave
 }
 
-const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelectedHospital }) => {
+const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelectedHospital, onSave }) => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
 
@@ -34,7 +35,7 @@ const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelect
         await axios.post('http://localhost:3000/hospitals', hospitalData);
         toast.success('Hospital adicionado com sucesso');
       }
-      setSelectedHospital(null);
+      onSave(); // Chamar a função onSave após salvar
       setName('');
       setLocation('');
     } catch (error) {

@@ -9,13 +9,17 @@ const DoctorList: React.FC = () => {
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
 
   useEffect(() => {
+    fetchDoctors();
+  }, []);
+
+  const fetchDoctors = () => {
     axios.get('http://localhost:3000/doctors')
       .then(response => setDoctors(response.data))
       .catch(error => {
         console.error('Erro ao buscar médicos:', error);
         toast.error('Erro ao buscar médicos');
       });
-  }, []);
+  };
 
   const handleDelete = (id: number) => {
     axios.delete(`http://localhost:3000/doctors/${id}`)
@@ -29,10 +33,15 @@ const DoctorList: React.FC = () => {
       });
   };
 
+  const handleSave = () => {
+    fetchDoctors();
+    setSelectedDoctor(null);
+  };
+
   return (
     <div className="bg-white p-4 rounded-md shadow-md">
       <h2 className="text-2xl font-bold mb-4">Lista de Médicos</h2>
-      <DoctorForm selectedDoctor={selectedDoctor} setSelectedDoctor={setSelectedDoctor} />
+      <DoctorForm selectedDoctor={selectedDoctor} setSelectedDoctor={setSelectedDoctor} onSave={handleSave} />
       <ul className="mt-4">
         {doctors.map(doctor => (
           <li key={doctor.id} className="mb-2 flex justify-between items-center border-b pb-2">

@@ -6,9 +6,10 @@ import { toast } from 'react-toastify';
 interface DoctorFormProps {
   selectedDoctor: Doctor | null;
   setSelectedDoctor: (doctor: Doctor | null) => void;
+  onSave: () => void; // Adicionar a prop onSave
 }
 
-const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoctor }) => {
+const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoctor, onSave }) => {
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('');
 
@@ -34,7 +35,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoct
         await axios.post('http://localhost:3000/doctors', doctorData);
         toast.success('Médico adicionado com sucesso');
       }
-      setSelectedDoctor(null);
+      onSave(); // Chamar a função onSave após salvar
       setName('');
       setSpecialty('');
     } catch (error) {
