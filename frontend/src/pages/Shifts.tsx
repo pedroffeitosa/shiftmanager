@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 interface Shift {
   id: number;
@@ -11,13 +11,12 @@ interface Shift {
 
 const Shifts: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get(`${apiUrl}/shifts`)
-      .then(response => setShifts(response.data))
-      .catch(error => console.error('Erro ao buscar turnos:', error));
-  }, [apiUrl]);
+    api.get('/shifts')
+      .then((response) => setShifts(response.data))
+      .catch((error) => console.error('Erro ao buscar turnos:', error));
+  }, []);
 
   return (
     <div className="container mx-auto mt-4">

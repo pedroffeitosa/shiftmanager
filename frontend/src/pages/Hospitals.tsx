@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api'; 
 
 interface Hospital {
   id: number;
@@ -10,13 +10,12 @@ interface Hospital {
 
 const Hospitals: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get(`${apiUrl}/hospitals`)
-      .then(response => setHospitals(response.data))
-      .catch(error => console.error('Erro ao buscar hospitais:', error));
-  }, [apiUrl]);
+    api.get('/hospitals')
+      .then((response) => setHospitals(response.data))
+      .catch((error) => console.error('Erro ao buscar hospitais:', error));
+  }, []);
 
   return (
     <div className="container mx-auto mt-4">

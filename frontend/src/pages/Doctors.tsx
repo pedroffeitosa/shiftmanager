@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-
-interface Doctor {
-  id: number;
-  name: string;
-  specialty: string;
-  created_at: string;
-}
+import api from '../api'; 
+import { Doctor } from '../types';
 
 const Doctors: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get(`${apiUrl}/doctors`)
-      .then(response => setDoctors(response.data))
-      .catch(error => console.error('Erro ao buscar médicos:', error));
-  }, [apiUrl]);
+    api.get('/doctors')
+      .then((response) => setDoctors(response.data))
+      .catch((error) => console.error('Erro ao buscar médicos:', error));
+  }, []);
 
   return (
     <div className="container mx-auto mt-4">

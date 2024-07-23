@@ -1,49 +1,50 @@
 import { Request, Response } from 'express';
-import createConnection from '../database';
+import pool from '../database';
 import { Hospital } from '../models/hospital';
 
 export const getHospitals = async (req: Request, res: Response) => {
   try {
-    const connection = await createConnection();
-    const [results] = await connection.query('SELECT * FROM hospitals');
+    const [results] = await pool.query('SELECT * FROM hospitals');
     res.json(results);
-  } catch (err: any) {
-    console.error('Erro ao buscar hospitais:', err);
-    res.status(500).json({ error: 'Erro ao buscar hospitais' });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
 export const addHospital = async (req: Request, res: Response) => {
+  const newHospital: Hospital = req.body;
   try {
-    const connection = await createConnection();
-    const newHospital: Hospital = req.body;
-    const [results] = await connection.query('INSERT INTO hospitals SET ?', newHospital);
-    res.json({ id: (results as any).insertId, ...newHospital });
-  } catch (err: any) {
-    console.error('Erro ao adicionar hospital:', err);
-    res.status(500).json({ error: 'Erro ao adicionar hospital' });
+    const [results] = await pool.query('INSERT INTO hospitals SET ?', newHospital);
+    const insertId = (results as any).insertId; // Casting para `any` para acessar `insertId`
+    res.json({ id: insertId, ...newHospital });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
 export const updateHospital = async (req: Request, res: Response) => {
+  const updatedHospital: Hospital = req.body;
   try {
-    const connection = await createConnection();
-    const updatedHospital: Hospital = req.body;
-    await connection.query('UPDATE hospitals SET ? WHERE id = ?', [updatedHospital, req.params.id]);
-    res.json({ message: 'Hospital atualizado com sucesso' });
-  } catch (err: any) {
-    console.error('Erro ao atualizar hospital:', err);
-    res.status(500).json({ error: 'Erro ao atualizar hospital' });
+    await pool.query('UPDATE hospitals SET ? WHERE id = ?', [updatedHospital, req.params.id]);
+    res.json({ message: 'Hospital updated successfully' });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
 export const deleteHospital = async (req: Request, res: Response) => {
   try {
-    const connection = await createConnection();
-    await connection.query('DELETE FROM hospitals WHERE id = ?', [req.params.id]);
-    res.json({ message: 'Hospital deletado com sucesso' });
-  } catch (err: any) {
-    console.error('Erro ao deletar hospital:', err);
-    res.status(500).json({ error: 'Erro ao deletar hospital' });
+    await pool.query('DELETE FROM hospitals WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Hospital deleted successfully' });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };

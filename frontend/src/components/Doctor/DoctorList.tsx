@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import DoctorForm from './DoctorForm';
 import { Doctor } from '../../types';
 import { toast } from 'react-toastify';
-
-const apiUrl = process.env.REACT_APP_API_URL;
 
 const DoctorList: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -15,7 +13,7 @@ const DoctorList: React.FC = () => {
   }, []);
 
   const fetchDoctors = () => {
-    axios.get(`${apiUrl}/doctors`)
+    api.get('/doctors')
       .then(response => setDoctors(response.data))
       .catch(error => {
         console.error('Erro ao buscar médicos:', error);
@@ -24,7 +22,7 @@ const DoctorList: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    axios.delete(`${apiUrl}/doctors/${id}`)
+    api.delete(`/doctors/${id}`)
       .then(() => {
         setDoctors(doctors.filter(doctor => doctor.id !== id));
         toast.success('Médico deletado com sucesso');

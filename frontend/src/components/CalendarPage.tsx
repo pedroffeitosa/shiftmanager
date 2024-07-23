@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import axios from 'axios';
-
-const apiUrl = process.env.REACT_APP_API_URL;
+import api from '../api';
 
 interface Shift {
   id: number;
@@ -18,9 +16,9 @@ const CalendarPage: React.FC = () => {
   const [date, setDate] = useState<Date | null>(new Date());
 
   useEffect(() => {
-    axios.get(`${apiUrl}/shifts`)
-      .then(response => setShifts(response.data))
-      .catch(error => console.error('Erro ao buscar turnos:', error));
+    api.get('/shifts')
+      .then((response: { data: Shift[] }) => setShifts(response.data))
+      .catch((error: any) => console.error('Erro ao buscar turnos:', error));
   }, []);
 
   const getShiftsForDate = (date: Date) => {

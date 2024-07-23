@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { Shift } from '../../types';
 import { toast } from 'react-toastify';
-
-const apiUrl = process.env.REACT_APP_API_URL;
 
 interface ShiftFormProps {
   selectedShift: Shift | null;
@@ -37,10 +35,10 @@ const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift, 
 
     try {
       if (selectedShift) {
-        await axios.put(`${apiUrl}/shifts/${selectedShift.id}`, shiftData);
+        await api.put(`/shifts/${selectedShift.id}`, shiftData);
         toast.success('Turno atualizado com sucesso');
       } else {
-        await axios.post(`${apiUrl}/shifts`, shiftData);
+        await api.post('/shifts', shiftData);
         toast.success('Turno adicionado com sucesso');
       }
       onSave();

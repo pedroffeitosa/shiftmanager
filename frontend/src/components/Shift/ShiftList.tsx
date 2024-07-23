@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import ShiftForm from './ShiftForm';
 import { Shift } from '../../types';
 import { toast } from 'react-toastify';
-
-const apiUrl = process.env.REACT_APP_API_URL;
 
 const ShiftList: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -15,7 +13,7 @@ const ShiftList: React.FC = () => {
   }, []);
 
   const fetchShifts = () => {
-    axios.get(`${apiUrl}/shifts`)
+    api.get('/shifts')
       .then(response => setShifts(response.data))
       .catch(error => {
         console.error('Erro ao buscar turnos:', error);
@@ -24,7 +22,7 @@ const ShiftList: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    axios.delete(`${apiUrl}/shifts/${id}`)
+    api.delete(`/shifts/${id}`)
       .then(() => {
         setShifts(shifts.filter(shift => shift.id !== id));
         toast.success('Turno deletado com sucesso');

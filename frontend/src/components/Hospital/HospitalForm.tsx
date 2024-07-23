@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../api';
 import { Hospital } from '../../types';
 import { toast } from 'react-toastify';
-
-const apiUrl = process.env.REACT_APP_API_URL;
 
 interface HospitalFormProps {
   selectedHospital: Hospital | null;
@@ -31,10 +29,10 @@ const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelect
 
     try {
       if (selectedHospital) {
-        await axios.put(`${apiUrl}/hospitals/${selectedHospital.id}`, hospitalData);
+        await api.put(`/hospitals/${selectedHospital.id}`, hospitalData);
         toast.success('Hospital atualizado com sucesso');
       } else {
-        await axios.post(`${apiUrl}/hospitals`, hospitalData);
+        await api.post('/hospitals', hospitalData);
         toast.success('Hospital adicionado com sucesso');
       }
       onSave();

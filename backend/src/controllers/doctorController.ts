@@ -1,49 +1,50 @@
 import { Request, Response } from 'express';
-import createConnection from '../database';
+import pool from '../database';
 import { Doctor } from '../models/doctor';
 
 export const getDoctors = async (req: Request, res: Response) => {
   try {
-    const connection = await createConnection();
-    const [results] = await connection.query('SELECT * FROM doctors');
+    const [results] = await pool.query('SELECT * FROM doctors');
     res.json(results);
-  } catch (err: any) {
-    console.error('Erro ao buscar médicos:', err);
-    res.status(500).json({ error: 'Erro ao buscar médicos' });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
 export const addDoctor = async (req: Request, res: Response) => {
+  const newDoctor: Doctor = req.body;
   try {
-    const connection = await createConnection();
-    const newDoctor: Doctor = req.body;
-    const [results] = await connection.query('INSERT INTO doctors SET ?', newDoctor);
-    res.json({ id: (results as any).insertId, ...newDoctor });
-  } catch (err: any) {
-    console.error('Erro ao adicionar médico:', err);
-    res.status(500).json({ error: 'Erro ao adicionar médico' });
+    const [results] = await pool.query('INSERT INTO doctors SET ?', newDoctor);
+    const insertId = (results as any).insertId; // Casting para `any` para acessar `insertId`
+    res.json({ id: insertId, ...newDoctor });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
 export const updateDoctor = async (req: Request, res: Response) => {
+  const updatedDoctor: Doctor = req.body;
   try {
-    const connection = await createConnection();
-    const updatedDoctor: Doctor = req.body;
-    await connection.query('UPDATE doctors SET ? WHERE id = ?', [updatedDoctor, req.params.id]);
-    res.json({ message: 'Médico atualizado com sucesso' });
-  } catch (err: any) {
-    console.error('Erro ao atualizar médico:', err);
-    res.status(500).json({ error: 'Erro ao atualizar médico' });
+    await pool.query('UPDATE doctors SET ? WHERE id = ?', [updatedDoctor, req.params.id]);
+    res.json({ message: 'Doctor updated successfully' });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 
 export const deleteDoctor = async (req: Request, res: Response) => {
   try {
-    const connection = await createConnection();
-    await connection.query('DELETE FROM doctors WHERE id = ?', [req.params.id]);
-    res.json({ message: 'Médico deletado com sucesso' });
-  } catch (err: any) {
-    console.error('Erro ao deletar médico:', err);
-    res.status(500).json({ error: 'Erro ao deletar médico' });
+    await pool.query('DELETE FROM doctors WHERE id = ?', [req.params.id]);
+    res.json({ message: 'Doctor deleted successfully' });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 };
