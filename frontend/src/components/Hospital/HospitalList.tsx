@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import HospitalForm from './HospitalForm';
 import { Hospital } from '../../types'; // Importar o tipo Hospital
+import { toast } from 'react-toastify';
 
 const HospitalList: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
@@ -10,13 +11,22 @@ const HospitalList: React.FC = () => {
   useEffect(() => {
     axios.get('http://localhost:3000/hospitals')
       .then(response => setHospitals(response.data))
-      .catch(error => console.error('Erro ao buscar hospitais:', error));
+      .catch(error => {
+        console.error('Erro ao buscar hospitais:', error);
+        toast.error('Erro ao buscar hospitais');
+      });
   }, []);
 
   const handleDelete = (id: number) => {
     axios.delete(`http://localhost:3000/hospitals/${id}`)
-      .then(() => setHospitals(hospitals.filter(hospital => hospital.id !== id)))
-      .catch(error => console.error('Erro ao deletar hospital:', error));
+      .then(() => {
+        setHospitals(hospitals.filter(hospital => hospital.id !== id));
+        toast.success('Hospital deletado com sucesso');
+      })
+      .catch(error => {
+        console.error('Erro ao deletar hospital:', error);
+        toast.error(error.response?.data?.error || 'Erro ao deletar hospital');
+      });
   };
 
   return (

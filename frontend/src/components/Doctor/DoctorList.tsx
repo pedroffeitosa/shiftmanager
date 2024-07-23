@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import DoctorForm from './DoctorForm';
 import { Doctor } from '../../types'; // Importar o tipo Doctor
+import { toast } from 'react-toastify';
 
 const DoctorList: React.FC = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -10,13 +11,22 @@ const DoctorList: React.FC = () => {
   useEffect(() => {
     axios.get('http://localhost:3000/doctors')
       .then(response => setDoctors(response.data))
-      .catch(error => console.error('Erro ao buscar médicos:', error));
+      .catch(error => {
+        console.error('Erro ao buscar médicos:', error);
+        toast.error('Erro ao buscar médicos');
+      });
   }, []);
 
   const handleDelete = (id: number) => {
     axios.delete(`http://localhost:3000/doctors/${id}`)
-      .then(() => setDoctors(doctors.filter(doctor => doctor.id !== id)))
-      .catch(error => console.error('Erro ao deletar médico:', error));
+      .then(() => {
+        setDoctors(doctors.filter(doctor => doctor.id !== id));
+        toast.success('Médico deletado com sucesso');
+      })
+      .catch(error => {
+        console.error('Erro ao deletar médico:', error);
+        toast.error(error.response?.data?.error || 'Erro ao deletar médico');
+      });
   };
 
   return (

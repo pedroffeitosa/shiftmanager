@@ -38,12 +38,24 @@ export const updateDoctor = (req: Request, res: Response) => {
 };
 
 export const deleteDoctor = (req: Request, res: Response) => {
-  connection.query('DELETE FROM doctors WHERE id = ?', [req.params.id], (err, results) => {
+  const doctorId = req.params.id;
+
+  // Primeiro deletar os turnos associados ao médico
+  connection.query('DELETE FROM shifts WHERE doctor_id = ?', [doctorId], (err, results) => {
     if (err) {
-      console.error('Error deleting doctor:', err);
-      res.status(500).json({ error: err.message });
+      console.error('Error deleting shifts:', err);
+      res.status(500).json({ error: 'Não foi possível deletar o médico porque ele está associado a um turno.' });
       return;
     }
-    res.json({ message: 'Doctor deleted successfully' });
+
+    // Depois deletar o médico
+    connection.query('DELETE FROM doctors WHERE id = ?', [doctorId], (err, results) => {
+      if (err) {
+        console.error('Error deleting doctor:', err);
+        res.status(500).json({ error: err.message });
+        return;
+      }
+      res.json({ message: 'Doctor and associated shifts deleted successfully' });
+    });
   });
 };

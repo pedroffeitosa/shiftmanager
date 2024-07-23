@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ShiftForm from './ShiftForm';
 import { Shift } from '../../types'; // Importar o tipo Shift
+import { toast } from 'react-toastify';
 
 const ShiftList: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
@@ -10,13 +11,22 @@ const ShiftList: React.FC = () => {
   useEffect(() => {
     axios.get('http://localhost:3000/shifts')
       .then(response => setShifts(response.data))
-      .catch(error => console.error('Erro ao buscar turnos:', error));
+      .catch(error => {
+        console.error('Erro ao buscar turnos:', error);
+        toast.error('Erro ao buscar turnos');
+      });
   }, []);
 
   const handleDelete = (id: number) => {
     axios.delete(`http://localhost:3000/shifts/${id}`)
-      .then(() => setShifts(shifts.filter(shift => shift.id !== id)))
-      .catch(error => console.error('Erro ao deletar turno:', error));
+      .then(() => {
+        setShifts(shifts.filter(shift => shift.id !== id));
+        toast.success('Turno deletado com sucesso');
+      })
+      .catch(error => {
+        console.error('Erro ao deletar turno:', error);
+        toast.error(error.response?.data?.error || 'Erro ao deletar turno');
+      });
   };
 
   return (
