@@ -52,12 +52,12 @@ const CalendarPage: React.FC = () => {
     <div className="container mx-auto mt-4">
       <h2 className="text-xl mb-4">Calendário de Plantões</h2>
       <div className="bg-white p-4 rounded-lg shadow-md flex justify-center">
-        <div className="w-full">
+        <div className="w-full lg:w-4/5 xl:w-3/4">
           <Calendar
             onChange={(value) => setDate(Array.isArray(value) ? value[0] : value)}
             value={date}
             tileContent={renderTileContent}
-            className="w-full h-auto"
+            className="w-full"
           />
         </div>
       </div>
