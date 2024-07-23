@@ -12,6 +12,7 @@ interface HospitalFormProps {
 const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelectedHospital, onSave }) => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (selectedHospital) {
@@ -29,10 +30,10 @@ const HospitalForm: React.FC<HospitalFormProps> = ({ selectedHospital, setSelect
 
     try {
       if (selectedHospital) {
-        await axios.put(`http://localhost:3000/hospitals/${selectedHospital.id}`, hospitalData);
+        await axios.put(`${apiUrl}/hospitals/${selectedHospital.id}`, hospitalData);
         toast.success('Hospital atualizado com sucesso');
       } else {
-        await axios.post('http://localhost:3000/hospitals', hospitalData);
+        await axios.post(`${apiUrl}/hospitals`, hospitalData);
         toast.success('Hospital adicionado com sucesso');
       }
       onSave(); // Chamar a função onSave após salvar

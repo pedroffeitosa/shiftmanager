@@ -14,6 +14,7 @@ const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift, 
   const [hospitalId, setHospitalId] = useState<number | null>(null);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (selectedShift) {
@@ -35,10 +36,10 @@ const ShiftForm: React.FC<ShiftFormProps> = ({ selectedShift, setSelectedShift, 
 
     try {
       if (selectedShift) {
-        await axios.put(`http://localhost:3000/shifts/${selectedShift.id}`, shiftData);
+        await axios.put(`${apiUrl}/shifts/${selectedShift.id}`, shiftData);
         toast.success('Turno atualizado com sucesso');
       } else {
-        await axios.post('http://localhost:3000/shifts', shiftData);
+        await axios.post(`${apiUrl}/shifts`, shiftData);
         toast.success('Turno adicionado com sucesso');
       }
       onSave(); // Chamar a função onSave após salvar

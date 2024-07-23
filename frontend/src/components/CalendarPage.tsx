@@ -14,12 +14,13 @@ interface Shift {
 const CalendarPage: React.FC = () => {
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [date, setDate] = useState<Date | null>(new Date());
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get('http://localhost:3000/shifts')
+    axios.get(`${apiUrl}/shifts`)
       .then(response => setShifts(response.data))
       .catch(error => console.error('Erro ao buscar turnos:', error));
-  }, []);
+  }, [apiUrl]);
 
   const getShiftsForDate = (date: Date) => {
     return shifts.filter(shift => {

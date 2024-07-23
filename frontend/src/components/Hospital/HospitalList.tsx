@@ -7,13 +7,14 @@ import { toast } from 'react-toastify';
 const HospitalList: React.FC = () => {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     fetchHospitals();
   }, []);
 
   const fetchHospitals = () => {
-    axios.get('http://localhost:3000/hospitals')
+    axios.get(`${apiUrl}/hospitals`)
       .then(response => setHospitals(response.data))
       .catch(error => {
         console.error('Erro ao buscar hospitais:', error);
@@ -22,7 +23,7 @@ const HospitalList: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    axios.delete(`http://localhost:3000/hospitals/${id}`)
+    axios.delete(`${apiUrl}/hospitals/${id}`)
       .then(() => {
         setHospitals(hospitals.filter(hospital => hospital.id !== id));
         toast.success('Hospital deletado com sucesso');

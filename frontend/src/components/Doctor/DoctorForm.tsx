@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Doctor } from '../../types'; // Importar o tipo Doctor
+import { Doctor } from '../../types'; 
 import { toast } from 'react-toastify';
 
 interface DoctorFormProps {
   selectedDoctor: Doctor | null;
   setSelectedDoctor: (doctor: Doctor | null) => void;
-  onSave: () => void; // Adicionar a prop onSave
+  onSave: () => void; 
 }
 
 const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoctor, onSave }) => {
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('');
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (selectedDoctor) {
@@ -29,13 +30,13 @@ const DoctorForm: React.FC<DoctorFormProps> = ({ selectedDoctor, setSelectedDoct
 
     try {
       if (selectedDoctor) {
-        await axios.put(`http://localhost:3000/doctors/${selectedDoctor.id}`, doctorData);
+        await axios.put(`${apiUrl}/doctors/${selectedDoctor.id}`, doctorData);
         toast.success('Médico atualizado com sucesso');
       } else {
-        await axios.post('http://localhost:3000/doctors', doctorData);
+        await axios.post(`${apiUrl}/doctors`, doctorData);
         toast.success('Médico adicionado com sucesso');
       }
-      onSave(); // Chamar a função onSave após salvar
+      onSave(); 
       setName('');
       setSpecialty('');
     } catch (error) {
