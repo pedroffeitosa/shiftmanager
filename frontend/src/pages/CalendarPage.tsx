@@ -39,7 +39,7 @@ const CalendarPage: React.FC = () => {
         <div className="text-xs">
           {dayShifts.map(shift => (
             <div key={shift.id}>
-              Dr. {shift.doctor_id} at Hospital {shift.hospital_id}
+              Dr. {shift.doctor_id} no Hospital {shift.hospital_id} às {new Date(shift.start_time).toLocaleTimeString()} - {new Date(shift.end_time).toLocaleTimeString()}
             </div>
           ))}
         </div>
@@ -50,7 +50,7 @@ const CalendarPage: React.FC = () => {
 
   return (
     <div className="container mx-auto mt-4">
-      <h2 className="text-2xl font-bold mb-4">Calendário de Plantões</h2>
+      <h2 className="text-xl mb-4">Calendário de Plantões</h2>
       <div className="bg-white p-4 rounded-lg shadow-md flex justify-center">
         <div className="w-full">
           <Calendar
@@ -61,12 +61,12 @@ const CalendarPage: React.FC = () => {
           />
         </div>
       </div>
-      <div className="mt-4 bg-white p-4 rounded-lg shadow-md">
-        <h3 className="text-xl font-semibold">Turnos para {date?.toDateString()}</h3>
-        <ul className="mt-2">
+      <div className="mt-4">
+        <h3>Turnos para {date?.toLocaleDateString('pt-BR')}</h3>
+        <ul>
           {date && getShiftsForDate(date).map(shift => (
-            <li key={shift.id} className="mb-2">
-              Dr. {shift.doctor_id} at Hospital {shift.hospital_id} - {new Date(shift.start_time).toLocaleTimeString()} to {new Date(shift.end_time).toLocaleTimeString()}
+            <li key={shift.id}>
+              Dr. {shift.doctor_id} no Hospital {shift.hospital_id} - {new Date(shift.start_time).toLocaleTimeString()} às {new Date(shift.end_time).toLocaleTimeString()}
             </li>
           ))}
         </ul>
