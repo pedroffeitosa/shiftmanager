@@ -47,8 +47,8 @@ const HospitalList: React.FC = () => {
           <li key={hospital.id} className="mb-2 flex justify-between items-center border-b pb-2">
             <span>{hospital.name} - {hospital.location}</span>
             <div>
-              <button onClick={() => setSelectedHospital(hospital)} className="mr-2 bg-yellow-500 text-white px-4 py-2 rounded-md">Edit</button>
-              <button onClick={() => hospital.id && handleDelete(hospital.id)} className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
+              <button onClick={() => setSelectedHospital(hospital)} className="mr-2 bg-yellow-500 text-white px-4 py-2 rounded-md">Editar</button>
+              <button onClick={() => hospital.id && handleDelete(hospital.id)} className="bg-red-500 text-white px-4 py-2 rounded-md">Deletar</button>
             </div>
           </li>
         ))}
