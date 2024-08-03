@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: ['http://localhost:3001', 'https://shiftmanager-jade.vercel.app'], 
+  origin: ['http://localhost:3001', 'https://shiftmanager-client.vercel.app'], 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
